@@ -2,7 +2,7 @@
   "name": "pos-system",
   "version": "1.0.0",
   "description": "Point of Sale System with Electron, React, and SQLite",
-  "main": "dist/main/main.js",
+  "main": "dist/main/electron/main.js",
   "scripts": {
     "dev": "concurrently \"npm run dev:react\" \"npm run dev:electron\"",
     "dev:react": "vite",
@@ -13,7 +13,8 @@
     "package": "electron-builder",
     "postinstall": "electron-builder install-app-deps",
     "lint": "eslint . --ext .ts,.tsx",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "db:view": "node view-database.js"
   },
   "keywords": [
     "pos",
@@ -36,6 +37,7 @@
     "concurrently": "^9.1.2",
     "electron": "^33.4.11",
     "electron-builder": "^24.9.1",
+    "electron-rebuild": "^3.2.9",
     "eslint": "^8.57.1",
     "eslint-plugin-react-hooks": "^5.1.0",
     "eslint-plugin-react-refresh": "^0.4.16",
@@ -49,7 +51,7 @@
     "@heroicons/react": "^2.1.1",
     "@types/bcryptjs": "^2.4.6",
     "bcryptjs": "^2.4.3",
-    "better-sqlite3": "^9.2.2",
+    "better-sqlite3": "^12.5.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.28.0"
