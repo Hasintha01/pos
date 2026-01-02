@@ -6,12 +6,16 @@ import { runMigrations } from './database/migrator';
 import { AuthService } from './services/AuthService';
 import { ProductService } from './services/ProductService';
 import { SalesService } from './services/SalesService';
+import { AuditService } from './services/AuditService';
+import { SyncService } from './services/SyncService';
 
 let mainWindow: BrowserWindow | null = null;
 let db: Database.Database;
 let authService: AuthService;
 let productService: ProductService;
 let salesService: SalesService;
+let auditService: AuditService;
+let syncService: SyncService;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -50,6 +54,21 @@ function initializeDatabase() {
   authService = new AuthService(db);
   productService = new ProductService(db);
   salesService = new SalesService(db);
+  auditService = new AuditService(db);
+  syncService = new SyncService(db);
+
+  // Initialize sync (optional - set server URL if available)
+  const syncServerUrl = process.env.SYNC_SERVER_URL || '';
+  if (syncServerUrl) {
+    syncService.initialize(syncServerUrl).then(() => {
+      syncService.startPeriodicSync();
+      console.log('Sync service initialized and started');
+    });
+  } else {
+    syncService.initialize().then(() => {
+      console.log('Sync service initialized (offline mode)');
+    });
+  }
 
   console.log('Database initialized successfully');
 }
@@ -158,6 +177,31 @@ function setupIpcHandlers() {
   ipcMain.handle('sales:refund', (_, saleId) => {
     return salesService.refundSale(saleId);
   });
+
+  // Audit handlers
+  ipcMain.handle('audit:get-logs', (_, filters) => {
+    return auditService.getLogs(filters);
+  });
+
+  ipcMain.handle('audit:get-entity-history', (_, entityType, entityId) => {
+    return auditService.getEntityHistory(entityType, entityId);
+  });
+
+  // Sync handlers
+  ipcMain.handle('sync:manual-sync', async () => {
+    await syncService.sync();
+    return { success: true };
+  });
+
+  ipcMain.handle('sync:get-terminal-info', () => {
+    return syncService.getTerminalInfo();
+  });
+
+  ipcMain.handle('sync:configure-server', async (_, serverUrl) => {
+    await syncService.initialize(serverUrl);
+    syncService.startPeriodicSync();
+    return { success: true };
+  });
 }
 
 app.whenReady().then(() => {
@@ -174,6 +218,9 @@ app.whenReady().then(() => {
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
+    if (syncService) {
+      syncService.stopPeriodicSync();
+    }
     if (db) {
       db.close();
     }
@@ -182,6 +229,9 @@ app.on('window-all-closed', () => {
 });
 
 app.on('before-quit', () => {
+  if (syncService) {
+    syncService.stopPeriodicSync();
+  }
   if (db) {
     db.close();
   }
