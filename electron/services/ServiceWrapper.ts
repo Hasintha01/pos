@@ -35,7 +35,7 @@ export class ServiceWrapper {
           const data = options.getResult?.(result) || result;
 
           // Log audit
-          const { terminalInfo } = this.syncService.getTerminalInfo();
+          const terminalInfo = this.syncService.getTerminalInfo();
           this.auditService.log(
             userId,
             terminalInfo.storeId || 1,
@@ -44,7 +44,7 @@ export class ServiceWrapper {
             action,
             null,
             data,
-            terminalInfo.terminalId
+            terminalInfo.terminalId || undefined
           );
 
           // Queue for sync

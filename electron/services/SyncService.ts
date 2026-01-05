@@ -229,7 +229,9 @@ export class SyncService {
         throw new Error(`Pull failed: ${response.statusText}`);
       }
 
-      const { changes, latest_version } = await response.json();
+      const result = await response.json() as { changes?: any[]; latest_version?: number };
+      const changes = result.changes || [];
+      const latest_version = result.latest_version || syncState.last_sync_version;
 
       if (changes && changes.length > 0) {
         console.log(`Applying ${changes.length} remote changes...`);
