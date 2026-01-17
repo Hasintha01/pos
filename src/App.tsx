@@ -7,6 +7,7 @@ import Products from './pages/Products.tsx';
 import Sales from './pages/Sales.tsx';
 import Reports from './pages/Reports.tsx';
 import Settings from './pages/Settings.tsx';
+import AuditLog from './pages/AuditLog.tsx';
 import Layout from './components/Layout.tsx';
 
 const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -33,6 +34,7 @@ const App: React.FC = () => {
             <Route path="sales" element={<Sales />} />
             <Route path="reports" element={<Reports />} />
             <Route path="settings" element={<Settings />} />
+            <Route path="audit" element={<AuditLog />} />
           </Route>
         </Routes>
       </Router>

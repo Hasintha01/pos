@@ -1,6 +1,7 @@
 import React from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import SyncIndicator from './SyncIndicator';
 import {
   HomeIcon,
   ShoppingBagIcon,
@@ -8,6 +9,7 @@ import {
   ChartBarIcon,
   CogIcon,
   ArrowRightOnRectangleIcon,
+  ClipboardDocumentListIcon,
 } from '@heroicons/react/24/outline';
 
 const Layout: React.FC = () => {
@@ -25,6 +27,7 @@ const Layout: React.FC = () => {
     { name: 'Products', href: '/products', icon: ShoppingBagIcon },
     { name: 'Sales', href: '/sales', icon: CreditCardIcon },
     { name: 'Reports', href: '/reports', icon: ChartBarIcon },
+    { name: 'Audit Log', href: '/audit', icon: ClipboardDocumentListIcon },
     { name: 'Settings', href: '/settings', icon: CogIcon },
   ];
 
@@ -76,6 +79,11 @@ const Layout: React.FC = () => {
 
       {/* Main Content */}
       <div className="flex-1 overflow-auto">
+        {/* Header with Sync Status */}
+        <div className="bg-white shadow-sm border-b px-8 py-4 flex justify-end">
+          <SyncIndicator />
+        </div>
+        
         <div className="p-8">
           <Outlet />
         </div>
