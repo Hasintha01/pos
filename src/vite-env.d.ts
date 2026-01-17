@@ -21,11 +21,13 @@ declare global {
         getAllUsers: () => Promise<User[]>;
         toggleUserStatus: (userId: number) => Promise<any>;
       };
+      categories: {
+        getAll: () => Promise<Category[]>;
+        create: (name: string, description?: string) => Promise<any>;
+        update: (id: number, name: string, description?: string) => Promise<any>;
+        delete: (id: number) => Promise<any>;
+      };
       products: {
-        getAllCategories: () => Promise<Category[]>;
-        createCategory: (name: string, description?: string) => Promise<any>;
-        updateCategory: (id: number, name: string, description?: string) => Promise<any>;
-        deleteCategory: (id: number) => Promise<any>;
         getAll: () => Promise<Product[]>;
         getById: (id: number) => Promise<Product | null>;
         search: (query: string) => Promise<Product[]>;
@@ -56,6 +58,19 @@ declare global {
         getStats: (startDate?: string, endDate?: string) => Promise<any>;
         getTopSelling: (limit?: number) => Promise<any[]>;
         refund: (saleId: number) => Promise<any>;
+      };
+      users: {
+        getAll: () => Promise<User[]>;
+        create: (data: any) => Promise<any>;
+        update: (id: number, data: any) => Promise<any>;
+        delete: (id: number) => Promise<any>;
+      };
+      audit: {
+        getLogs: (filters: any) => Promise<any[]>;
+      };
+      sync: {
+        manualSync: () => Promise<any>;
+        configure: (config: any) => Promise<any>;
       };
     };
   }

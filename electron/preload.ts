@@ -17,15 +17,19 @@ contextBridge.exposeInMainWorld('electronAPI', {
       ipcRenderer.invoke('auth:toggle-user-status', userId),
   },
 
+  // Categories API
+  categories: {
+    getAll: () => ipcRenderer.invoke('products:get-all-categories'),
+    create: (name: string, description?: string) =>
+      ipcRenderer.invoke('products:create-category', name, description),
+    update: (id: number, name: string, description?: string) =>
+      ipcRenderer.invoke('products:update-category', id, name, description),
+    delete: (id: number) =>
+      ipcRenderer.invoke('products:delete-category', id),
+  },
+
   // Products API
   products: {
-    getAllCategories: () => ipcRenderer.invoke('products:get-all-categories'),
-    createCategory: (name: string, description?: string) =>
-      ipcRenderer.invoke('products:create-category', name, description),
-    updateCategory: (id: number, name: string, description?: string) =>
-      ipcRenderer.invoke('products:update-category', id, name, description),
-    deleteCategory: (id: number) =>
-      ipcRenderer.invoke('products:delete-category', id),
     getAll: () => ipcRenderer.invoke('products:get-all'),
     getById: (id: number) => ipcRenderer.invoke('products:get-by-id', id),
     search: (query: string) => ipcRenderer.invoke('products:search', query),
@@ -67,6 +71,25 @@ contextBridge.exposeInMainWorld('electronAPI', {
       ipcRenderer.invoke('sales:get-top-selling', limit),
     refund: (saleId: number) => ipcRenderer.invoke('sales:refund', saleId),
   },
+
+  // User Management API
+  users: {
+    getAll: () => ipcRenderer.invoke('auth:get-all-users'),
+    create: (data: any) => ipcRenderer.invoke('auth:create-user', data.username, data.password, data.username, data.role),
+    update: (id: number, data: any) => ipcRenderer.invoke('auth:update-password', id, '', data.password),
+    delete: (id: number) => ipcRenderer.invoke('auth:toggle-user-status', id),
+  },
+
+  // Audit API
+  audit: {
+    getLogs: (filters: any) => ipcRenderer.invoke('audit:get-logs', filters),
+  },
+
+  // Sync API
+  sync: {
+    manualSync: () => ipcRenderer.invoke('sync:manual-sync'),
+    configure: (config: any) => ipcRenderer.invoke('sync:configure-server', config),
+  },
 });
 
 // Type definitions for window.electronAPI
@@ -89,11 +112,13 @@ declare global {
         getAllUsers: () => Promise<User[]>;
         toggleUserStatus: (userId: number) => Promise<any>;
       };
+      categories: {
+        getAll: () => Promise<Category[]>;
+        create: (name: string, description?: string) => Promise<any>;
+        update: (id: number, name: string, description?: string) => Promise<any>;
+        delete: (id: number) => Promise<any>;
+      };
       products: {
-        getAllCategories: () => Promise<Category[]>;
-        createCategory: (name: string, description?: string) => Promise<any>;
-        updateCategory: (id: number, name: string, description?: string) => Promise<any>;
-        deleteCategory: (id: number) => Promise<any>;
         getAll: () => Promise<Product[]>;
         getById: (id: number) => Promise<Product | null>;
         search: (query: string) => Promise<Product[]>;
@@ -124,6 +149,19 @@ declare global {
         getStats: (startDate?: string, endDate?: string) => Promise<any>;
         getTopSelling: (limit?: number) => Promise<any[]>;
         refund: (saleId: number) => Promise<any>;
+      };
+      users: {
+        getAll: () => Promise<User[]>;
+        create: (data: any) => Promise<any>;
+        update: (id: number, data: any) => Promise<any>;
+        delete: (id: number) => Promise<any>;
+      };
+      audit: {
+        getLogs: (filters: any) => Promise<any[]>;
+      };
+      sync: {
+        manualSync: () => Promise<any>;
+        configure: (config: any) => Promise<any>;
       };
     };
   }

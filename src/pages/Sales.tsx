@@ -4,7 +4,6 @@ import { Product } from '../shared/types';
 import {
   MagnifyingGlassIcon,
   ShoppingCartIcon,
-  TrashIcon,
   XMarkIcon,
   CheckIcon,
 } from '@heroicons/react/24/outline';

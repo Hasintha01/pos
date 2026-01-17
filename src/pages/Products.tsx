@@ -76,7 +76,7 @@ const Products: React.FC = () => {
         name: product.name,
         sku: product.sku,
         barcode: product.barcode || '',
-        category_id: product.category_id,
+        category_id: product.category_id || 0,
         price: product.price,
         cost: product.cost || 0,
         stock_quantity: product.stock_quantity,
