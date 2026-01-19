@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { generateAuditReport } from '../utils/pdfGenerator';
 import {
   ClockIcon,
   UserIcon,
   FunnelIcon,
   MagnifyingGlassIcon,
+  DocumentArrowDownIcon,
 } from '@heroicons/react/24/outline';
 
 interface AuditLog {
@@ -130,7 +132,16 @@ const AuditLog: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold text-gray-800">Audit Log</h1>
+      <div className="flex justify-between items-center">
+        <h1 className="text-3xl font-bold text-gray-800">Audit Log</h1>
+        <button
+          onClick={() => generateAuditReport(filteredLogs)}
+          className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+        >
+          <DocumentArrowDownIcon className="w-5 h-5" />
+          Export PDF
+        </button>
+      </div>
 
       {/* Filters */}
       <div className="bg-white rounded-lg shadow-md p-6 space-y-4">

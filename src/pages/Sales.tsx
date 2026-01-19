@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Product } from '../shared/types';
+import { generateReceipt } from '../utils/pdfGenerator';
 import {
   MagnifyingGlassIcon,
   ShoppingCartIcon,
   XMarkIcon,
   CheckIcon,
+  PrinterIcon,
 } from '@heroicons/react/24/outline';
 
 interface CartItem {
@@ -25,6 +27,7 @@ const Sales: React.FC = () => {
   const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [lastSaleId, setLastSaleId] = useState<number | null>(null);
 
   useEffect(() => {
     loadProducts();
@@ -146,6 +149,7 @@ const Sales: React.FC = () => {
       );
 
       if (result.success) {
+        setLastSaleId(result.sale?.id || null);
         setShowSuccess(true);
         clearCart();
         loadProducts(); // Refresh stock
@@ -163,13 +167,37 @@ const Sales: React.FC = () => {
       setLoading(false);
     }
   };
-
   const filteredProducts = products.filter(p =>
     p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     p.sku.toLowerCase().includes(searchQuery.toLowerCase()) ||
     p.barcode?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const handlePrintReceipt = () => {
+    if (!lastSaleId || !user) return;
+
+    const receiptData = {
+      saleId: lastSaleId,
+      date: new Date().toLocaleString(),
+      cashier: user.full_name,
+      items: cart.map(item => ({
+        name: item.product.name,
+        quantity: item.quantity,
+        price: item.product.price,
+        total: item.product.price * item.quantity - item.discount,
+      })),
+      subtotal: calculateSubtotal(),
+      discount: discount,
+      tax: tax,
+      total: calculateTotal(),
+      paymentMethod: paymentMethod,
+      notes: notes,
+    };
+
+    generateReceipt(receiptData);
+  };
+
+  return (
   return (
     <div className="h-full flex gap-6">
       {/* Left Panel - Products */}
@@ -381,21 +409,28 @@ const Sales: React.FC = () => {
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 className="w-full border border-gray-300 rounded-lg py-2 px-3 text-sm"
-                rows={2}
-                placeholder="Add notes..."
-              />
+      {/* Success Modal */}
+      {showSuccess && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-8 max-w-sm text-center">
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <CheckIcon className="w-10 h-10 text-green-600" />
             </div>
-
-            {/* Checkout Button */}
+            <h3 className="text-2xl font-bold text-gray-800 mb-2">Sale Complete!</h3>
+            <p className="text-gray-600 mb-6">Transaction successful</p>
             <button
-              onClick={handleCheckout}
-              disabled={loading}
-              className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              onClick={handlePrintReceipt}
+              className="flex items-center gap-2 mx-auto bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
             >
-              {loading ? (
-                'Processing...'
-              ) : (
-                <>
+              <PrinterIcon className="w-5 h-5" />
+              Print Receipt
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};              <>
                   <CheckIcon className="w-5 h-5" />
                   Complete Sale
                 </>

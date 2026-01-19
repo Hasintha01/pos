@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Product } from '../shared/types';
+import { generateInventoryReport } from '../utils/pdfGenerator';
 import {
   PlusIcon,
   MagnifyingGlassIcon,
   PencilIcon,
   TrashIcon,
   XMarkIcon,
+  DocumentArrowDownIcon,
 } from '@heroicons/react/24/outline';
 
 interface Category {
@@ -156,13 +158,22 @@ const Products: React.FC = () => {
     <div>
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold text-gray-800">Products</h1>
-        <button
-          onClick={() => handleOpenModal()}
-          className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-        >
-          <PlusIcon className="w-5 h-5" />
-          <span>Add Product</span>
-        </button>
+        <div className="flex gap-3">
+          <button
+            onClick={() => generateInventoryReport(products)}
+            className="flex items-center space-x-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+          >
+            <DocumentArrowDownIcon className="w-5 h-5" />
+            <span>Export PDF</span>
+          </button>
+          <button
+            onClick={() => handleOpenModal()}
+            className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            <PlusIcon className="w-5 h-5" />
+            <span>Add Product</span>
+          </button>
+        </div>
       </div>
 
       <div className="bg-white rounded-lg shadow-md p-6 mb-6">

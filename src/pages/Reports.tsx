@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { generateSalesReport } from '../utils/pdfGenerator';
 import {
   ChartBarIcon,
   ArrowTrendingUpIcon,
@@ -6,6 +7,7 @@ import {
   ShoppingBagIcon,
   CalendarIcon,
   ArrowDownTrayIcon,
+  DocumentArrowDownIcon,
 } from '@heroicons/react/24/outline';
 
 interface Sale {
@@ -167,6 +169,43 @@ const Reports: React.FC = () => {
     a.href = url;
     a.download = `sales-report-${new Date().toISOString().split('T')[0]}.csv`;
     a.click();
+  };
+
+  const exportToPDF = () => {
+    const data = sales.map(sale => [
+      new Date(sale.created_at).toLocaleString(),
+      `#${sale.id}`,
+      <div className="flex justify-between items-center">
+        <h1 className="text-3xl font-bold text-gray-800">Sales Reports</h1>
+        
+        <div className="flex gap-3">
+          <button
+            onClick={exportToPDF}
+            className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+          >
+            <DocumentArrowDownIcon className="w-5 h-5" />
+            Export PDF
+          </button>
+          <button
+            onClick={exportToCSV}
+            className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            <ArrowDownTrayIcon className="w-5 h-5" />
+            Export CSV
+          </button>
+        </div>
+      </div>SalesReport({
+      title: 'Sales Report',
+      dateRange: rangeText,
+      columns: ['Date', 'Sale ID', 'Total', 'Payment', 'Items'],
+      data,
+      summary: {
+        'Total Sales': totalSales,
+        'Total Revenue': `$${totalRevenue.toFixed(2)}`,
+        'Average Sale': `$${avgSale.toFixed(2)}`,
+        'Items Sold': totalItems,
+      },
+    });
   };
 
   const maxDailySale = Math.max(...dailySales.map(d => d.total), 1);
