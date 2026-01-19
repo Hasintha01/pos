@@ -175,26 +175,17 @@ const Reports: React.FC = () => {
     const data = sales.map(sale => [
       new Date(sale.created_at).toLocaleString(),
       `#${sale.id}`,
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-800">Sales Reports</h1>
-        
-        <div className="flex gap-3">
-          <button
-            onClick={exportToPDF}
-            className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
-          >
-            <DocumentArrowDownIcon className="w-5 h-5" />
-            Export PDF
-          </button>
-          <button
-            onClick={exportToCSV}
-            className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            <ArrowDownTrayIcon className="w-5 h-5" />
-            Export CSV
-          </button>
-        </div>
-      </div>SalesReport({
+      `$${sale.total_amount.toFixed(2)}`,
+      sale.payment_method.toUpperCase(),
+      (sale.items?.length || 0).toString(),
+    ]);
+
+    const { start, end } = getDateFilter();
+    const rangeText = dateRange === 'custom' && startDate && endDate
+      ? `${startDate} to ${endDate}`
+      : `Last ${dateRange}`;
+
+    generateSalesReport({
       title: 'Sales Report',
       dateRange: rangeText,
       columns: ['Date', 'Sale ID', 'Total', 'Payment', 'Items'],
@@ -215,13 +206,22 @@ const Reports: React.FC = () => {
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-gray-800">Sales Reports</h1>
         
-        <button
-          onClick={exportToCSV}
-          className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-        >
-          <ArrowDownTrayIcon className="w-5 h-5" />
-          Export CSV
-        </button>
+        <div className="flex gap-3">
+          <button
+            onClick={exportToPDF}
+            className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+          >
+            <DocumentArrowDownIcon className="w-5 h-5" />
+            Export PDF
+          </button>
+          <button
+            onClick={exportToCSV}
+            className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            <ArrowDownTrayIcon className="w-5 h-5" />
+            Export CSV
+          </button>
+        </div>
       </div>
 
       {/* Date Range Selector */}
